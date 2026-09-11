@@ -1,0 +1,14 @@
+{
+  "title": "Daneses Dorados Morelos",
+  "description": "Equipo Profesional de Voleibol",
+  "robots": {
+    "index": false
+  },
+  "icons": {
+    "icon": "/.figma/make/favicon.png"
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
