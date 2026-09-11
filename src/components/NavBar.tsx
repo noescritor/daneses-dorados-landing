@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Btn, ClubBadge } from "./ui";
+import { Btn } from "./ui";
+import BadgeIcon from "./BadgeIcon";
 
 const links = [
   { label: "Equipo", href: "#equipo" },
@@ -38,7 +39,7 @@ export default function NavBar() {
             animate={{ scale: scrolled ? 0.88 : 1 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
           >
-            <ClubBadge size={scrolled ? 44 : 52} />
+            <BadgeIcon size={scrolled ? 44 : 52} />
           </motion.div>
           <div className="hidden sm:flex flex-col leading-none">
             <span

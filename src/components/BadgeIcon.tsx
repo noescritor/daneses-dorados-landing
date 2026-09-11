@@ -1,5 +1,3 @@
-import Group6 from "@/imports/Group6";
-
 interface BadgeIconProps {
   size?: number;
   className?: string;
@@ -7,11 +5,13 @@ interface BadgeIconProps {
 
 export default function BadgeIcon({ size = 56, className = "" }: BadgeIconProps) {
   return (
-    <div
-      className={`relative shrink-0 ${className}`}
+    <img
+      src="/logo-daneses.svg"
+      alt="Daneses Dorados Morelos"
+      width={size}
+      height={size}
+      className={`shrink-0 ${className}`}
       style={{ width: size, height: size }}
-    >
-      <Group6 />
-    </div>
+    />
   );
 }

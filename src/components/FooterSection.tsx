@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { GrainOverlay, ClubBadge } from "./ui";
+import { GrainOverlay } from "./ui";
+import BadgeIcon from "./BadgeIcon";
 
 const navLinks = [
   { label: "Equipo", href: "#equipo" },
@@ -40,7 +41,7 @@ export default function FooterSection() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <ClubBadge size={60} />
+              <BadgeIcon size={60} />
               <div>
                 <p className="font-[family-name:var(--font-gin)] font-extrabold uppercase text-white text-base tracking-[0.1em] leading-none">
                   Daneses Dorados
