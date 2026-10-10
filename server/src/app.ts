@@ -1,4 +1,4 @@
-import { Hono, type MiddlewareHandler } from "hono";
+import { Hono, type Context, type MiddlewareHandler } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { secureHeaders } from "hono/secure-headers";
@@ -254,8 +254,18 @@ export function createApp(deps: AppDeps): Hono {
   app.all("/api/*", (c) => c.json({ error: "not_found" }, 404));
 
   if (deps.serveFrontend !== false) {
-    app.use("/*", serveStatic({ root: cfg.STATIC_DIR }));
-    app.get("*", serveStatic({ path: `${cfg.STATIC_DIR}/index.html` }));
+    // El HTML siempre se revalida (así un deploy nuevo se ve de inmediato); los archivos de
+    // /assets llevan hash en el nombre y nunca cambian; el resto (fotos, logos) se cachea poco.
+    const onFound = (path: string, c: Context) => {
+      const cache = path.endsWith(".html")
+        ? "no-cache"
+        : /[\\/]assets[\\/]/.test(path)
+          ? "public, max-age=31536000, immutable"
+          : "public, max-age=3600";
+      c.header("Cache-Control", cache);
+    };
+    app.use("/*", serveStatic({ root: cfg.STATIC_DIR, onFound }));
+    app.get("*", serveStatic({ path: `${cfg.STATIC_DIR}/index.html`, onFound }));
   }
 
   return app;
