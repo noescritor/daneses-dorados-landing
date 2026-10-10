@@ -1,7 +1,7 @@
 import { useCountdown } from "./ui";
 import { useState, useEffect, useRef } from "react";
 
-const TARGET = new Date("2026-09-20T19:00:00-06:00");
+const TARGET = new Date("2026-10-24T18:00:00-06:00");
 
 function FlipUnit({ value, label }: { value: number; label: string }) {
   const [prev, setPrev] = useState(value);
@@ -48,10 +48,10 @@ export default function NextGameBar() {
           <div className="w-1.5 h-10 bg-[#B4904B]" />
           <div>
             <p className="font-[family-name:var(--font-montserrat)] text-[10px] tracking-[0.25em] uppercase text-[#B4904B] mb-0.5">
-              Próximo partido
+              Próximo partido en casa
             </p>
             <p className="font-[family-name:var(--font-gin)] font-bold uppercase text-white text-lg lg:text-xl tracking-wide leading-none">
-              Daneses vs Soles de Culiacán
+              Daneses vs Dragones de Querétaro
             </p>
           </div>
         </div>
@@ -60,15 +60,15 @@ export default function NextGameBar() {
         <div className="flex flex-wrap items-center gap-5 lg:gap-8">
           <div className="text-center">
             <p className="font-[family-name:var(--font-montserrat)] text-[10px] tracking-[0.2em] uppercase text-white/40">Fecha</p>
-            <p className="font-[family-name:var(--font-gin)] font-bold text-white text-base uppercase">20 Sep 2026</p>
+            <p className="font-[family-name:var(--font-gin)] font-bold text-white text-base uppercase">24 Oct 2026</p>
           </div>
           <div className="text-center">
             <p className="font-[family-name:var(--font-montserrat)] text-[10px] tracking-[0.2em] uppercase text-white/40">Sede</p>
-            <p className="font-[family-name:var(--font-gin)] font-bold text-white text-base uppercase">Auditorio Morelos</p>
+            <p className="font-[family-name:var(--font-gin)] font-bold text-white text-base uppercase">Poliforum, Oaxtepec</p>
           </div>
           <div className="text-center">
             <p className="font-[family-name:var(--font-montserrat)] text-[10px] tracking-[0.2em] uppercase text-white/40">Hora</p>
-            <p className="font-[family-name:var(--font-gin)] font-bold text-white text-base uppercase">19:00 h</p>
+            <p className="font-[family-name:var(--font-gin)] font-bold text-white text-base uppercase">18:00 h</p>
           </div>
 
           {/* Countdown */}

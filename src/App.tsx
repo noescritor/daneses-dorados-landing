@@ -6,12 +6,14 @@ import RosterSection from "./components/RosterSection";
 import StaffSection from "./components/StaffSection";
 import CalendarSection from "./components/CalendarSection";
 import TicketsSection from "./components/TicketsSection";
-import TryoutsSection from "./components/TryoutsSection";
 import SponsorsSection from "./components/SponsorsSection";
 import GallerySection from "./components/GallerySection";
 import FooterSection from "./components/FooterSection";
+import OrderPage from "./pages/OrderPage";
+import TicketPage from "./pages/TicketPage";
+import ScanPage from "./pages/ScanPage";
 
-export default function App() {
+function Landing() {
   return (
     <div className="relative bg-[#07030B]">
       <NavBar />
@@ -22,10 +24,23 @@ export default function App() {
       <StaffSection />
       <CalendarSection />
       <TicketsSection />
-      <TryoutsSection />
       <SponsorsSection />
       <GallerySection />
       <FooterSection />
     </div>
   );
+}
+
+export default function App() {
+  const path = window.location.pathname;
+
+  const order = path.match(/^\/pedido\/([0-9a-fA-F-]{36})\/?$/);
+  if (order) return <OrderPage id={order[1]} />;
+
+  const ticket = path.match(/^\/t\/([A-Za-z0-9_-]{22})\/?$/);
+  if (ticket) return <TicketPage code={ticket[1]} />;
+
+  if (/^\/scan\/?$/.test(path)) return <ScanPage />;
+
+  return <Landing />;
 }

@@ -6,7 +6,6 @@ const navLinks = [
   { label: "Equipo", href: "#equipo" },
   { label: "Calendario", href: "#calendario" },
   { label: "Boletos", href: "#boletos" },
-  { label: "Únete", href: "#tryouts" },
   { label: "Patrocinadores", href: "#patrocinadores" },
   { label: "Prensa", href: "#" },
   { label: "Contacto", href: "#footer" },
@@ -55,7 +54,7 @@ export default function FooterSection() {
               Fuerza · Orgullo · Equipo
             </p>
             <p className="font-[family-name:var(--font-montserrat)] text-white/45 text-xs leading-relaxed max-w-xs">
-              Club profesional de voleibol representando a Morelos en la Liga Nacional. Temporada 2026.
+              Equipo de voleibol de Morelos en la Liga Profesional de Voleibol de México (LVP MX). Temporada 2026.
             </p>
           </div>
 

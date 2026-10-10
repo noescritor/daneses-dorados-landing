@@ -1,12 +1,14 @@
 import { ScrollReveal, Btn } from "./ui";
 
-const games = [
-  { date: "20 Sep", day: "Dom", rival: "Soles de Culiacán", venue: "Auditorio Morelos, Cuernavaca", time: "19:00 h", home: true },
-  { date: "27 Sep", day: "Dom", rival: "Rayos de Hidalgo", venue: "Arena Hidalgo, Pachuca", time: "18:00 h", home: false },
-  { date: "04 Oct", day: "Dom", rival: "Aguacateros de Michoacán", venue: "Auditorio Morelos, Cuernavaca", time: "19:00 h", home: true },
-  { date: "11 Oct", day: "Dom", rival: "Peñeros de Minatitlán", venue: "Auditorio Morelos, Cuernavaca", time: "17:30 h", home: true },
-  { date: "18 Oct", day: "Dom", rival: "Astros de Jalisco", venue: "Guadalajara Arena, Guadalajara", time: "19:00 h", home: false },
-  { date: "25 Oct", day: "Dom", rival: "Camoteros de Puebla", venue: "Auditorio Morelos, Cuernavaca", time: "19:00 h", home: true },
+export const games = [
+  { date: "20 Oct", day: "Mar", rival: "Ángeles CD México", venue: "Gimnasio Olímpico Juan de la Barrera, CDMX", time: "19:00 h", home: false },
+  { date: "24 Oct", day: "Sáb", rival: "Dragones de Querétaro", venue: "Salón Poliforum, Dorados Convention & Resort, Oaxtepec, Morelos", time: "18:00 h", home: true },
+  { date: "31 Oct", day: "Sáb", rival: "Tapatíos", venue: "Estadio de Voleibol Joly Ramírez, Guadalajara, Jalisco", time: "20:00 h", home: false },
+  { date: "07 Nov", day: "Sáb", rival: "Aztecas", venue: "Salón Poliforum, Dorados Convention & Resort, Oaxtepec, Morelos", time: "18:00 h", home: true },
+  { date: "14 Nov", day: "Sáb", rival: "Ángeles CD México", venue: "Salón Poliforum, Dorados Convention & Resort, Oaxtepec, Morelos", time: "18:00 h", home: true },
+  { date: "18 Nov", day: "Mié", rival: "Dragones de Querétaro", venue: "Auditorio Arteaga, Querétaro, Qro.", time: "19:00 h", home: false },
+  { date: "21 Nov", day: "Sáb", rival: "Tapatíos", venue: "Salón Poliforum, Dorados Convention & Resort, Oaxtepec, Morelos", time: "18:00 h", home: true },
+  { date: "05 Dic", day: "Sáb", rival: "Aztecas", venue: "Ciudad Deportiva Juan Fernández Albarrán, Zinacantepec, Edo. de México", time: "19:00 h", home: false },
 ];
 
 export default function CalendarSection() {
@@ -17,7 +19,7 @@ export default function CalendarSection() {
         <div className="mb-12">
           <ScrollReveal>
             <p className="font-[family-name:var(--font-playfair)] italic text-[#B4904B] text-lg mb-2">
-              Liga Nacional · 2026
+              Temporada Regular · 2026
             </p>
           </ScrollReveal>
           <ScrollReveal delay={0.08}>
@@ -60,10 +62,12 @@ export default function CalendarSection() {
                   </p>
                 </div>
 
-                {/* CTA */}
-                <Btn href="#boletos" className="shrink-0 text-[10px] px-5 py-2.5">
-                  Boletos
-                </Btn>
+                {/* CTA: boletos solo para partidos de local */}
+                {g.home && (
+                  <Btn href="#boletos" className="shrink-0 text-[10px] px-5 py-2.5">
+                    Boletos
+                  </Btn>
+                )}
               </div>
             </ScrollReveal>
           ))}

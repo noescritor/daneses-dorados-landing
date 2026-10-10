@@ -1,12 +1,14 @@
 import { useRef } from "react";
 import { useInView } from "framer-motion";
 import { ScrollReveal, useCountUp } from "./ui";
+import { players } from "./RosterSection";
+import { games } from "./CalendarSection";
 
 const stats = [
-  { value: 2019, suffix: "", label: "Fundación" },
-  { value: 2026, suffix: "", label: "Temporada" },
-  { value: 8, suffix: "", label: "Títulos regionales" },
-  { value: 312, suffix: "+", label: "Seguidores en arena" },
+  { value: 2026, suffix: "", label: "Temporada debut" },
+  { value: players.length, suffix: "", label: "Jugadores en plantilla" },
+  { value: games.length, suffix: "", label: "Partidos de temporada" },
+  { value: games.filter((g) => g.home).length, suffix: "", label: "Partidos en casa" },
 ];
 
 function StatCard({ value, suffix, label, delay }: { value: number; suffix: string; label: string; delay: number }) {
@@ -21,7 +23,7 @@ function StatCard({ value, suffix, label, delay }: { value: number; suffix: stri
         className="bg-[#07030B] p-6 lg:p-8 border-l-[3px] border-[#B4904B] flex flex-col justify-between min-h-[140px] group hover:border-l-[4px] transition-all duration-200"
       >
         <p className="font-[family-name:var(--font-gin)] font-black text-[#B4904B] text-[52px] lg:text-[64px] leading-none tracking-tight">
-          {count.toLocaleString()}{suffix}
+          {count}{suffix}
         </p>
         <p className="font-[family-name:var(--font-montserrat)] font-semibold text-white/60 text-xs tracking-[0.2em] uppercase mt-3">
           {label}
@@ -57,12 +59,12 @@ export default function ConceptSection() {
             </ScrollReveal>
             <ScrollReveal delay={0.18}>
               <p className="font-[family-name:var(--font-montserrat)] text-[#07030B]/75 text-[15px] leading-relaxed mb-4">
-                Daneses Dorados Morelos es el equipo de voleibol profesional que representa al estado de Morelos en la Liga Nacional de Voleibol. Fundado sobre los valores del Gran Danés — nobleza, fuerza y determinación — competimos cada temporada con una plantilla de élite.
+                Daneses Dorados Morelos es un equipo nuevo que debuta en la Liga Profesional de Voleibol de México (LVP MX) y representa al estado de Morelos. Nacemos sobre los valores del Gran Danés — nobleza, fuerza y determinación — con una plantilla que reúne talento morelense y jugadores de otros estados y países.
               </p>
             </ScrollReveal>
             <ScrollReveal delay={0.22}>
               <p className="font-[family-name:var(--font-montserrat)] text-[#07030B]/75 text-[15px] leading-relaxed mb-8">
-                Nuestro juego combina la potencia ofensiva con una defensa implacable. En la arena, somos uno. Fuera de ella, somos embajadores del deporte morelense.
+                Esta es nuestra temporada debut: cada partido en casa, en el Salón Poliforum de Oaxtepec, es el primer capítulo de una historia que apenas empieza. En la cancha somos uno. Fuera de ella, somos embajadores del deporte morelense.
               </p>
             </ScrollReveal>
             <ScrollReveal delay={0.28}>

@@ -1,23 +1,25 @@
-import { ScrollReveal } from "./ui";
+import { ScrollReveal, DaneSilhouette } from "./ui";
 
 const staff = [
   {
-    name: "Roberto Méndez",
-    role: "Head Coach",
-    credentials: "Medallista panamericano · 18 años de experiencia · Ex seleccionado nacional",
-    img: "https://images.unsplash.com/photo-1596230948136-b2edac629ded?w=500&h=600&fit=crop&auto=format&q=80",
+    name: "José Eduardo Icelo Rossano",
+    role: "Entrenador Principal",
+    details: ["Puebla, Puebla", "36 años", "Nivel FIVB 2"],
   },
   {
-    name: "Adriana Flores",
-    role: "Directora Deportiva",
-    credentials: "Licenciada en Ciencias del Deporte · UNAM · Gestión deportiva profesional",
-    img: "https://images.unsplash.com/photo-1620258218813-dd700da0627b?w=500&h=600&fit=crop&auto=format&q=80",
+    name: "Eduardo Miranda Kempis",
+    role: "Preparador Físico",
+    details: ["Cuautla, Morelos", "32 años"],
   },
   {
-    name: "Carlos Vega",
-    role: "Asistente Técnico",
-    credentials: "Especialista en análisis de juego · Certificación FIVB Nivel 2",
-    img: "https://images.unsplash.com/photo-1720731052616-3921fd9a92f6?w=500&h=600&fit=crop&auto=format&q=80",
+    name: "Rodolfo Alan Álvarez Juárez",
+    role: "Auxiliar de Entrenador",
+    details: ["Ciudad de México", "Nivel FIVB 1"],
+  },
+  {
+    name: "Luis Ángel Hernández Hernández",
+    role: "Estadístico",
+    details: ["Tlalnepantla, Edo. de México", "C.O. VolleyLab"],
   },
 ];
 
@@ -43,23 +45,18 @@ export default function StaffSection() {
         </div>
 
         {/* Cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {staff.map((s, i) => (
             <ScrollReveal key={s.name} delay={i * 0.1}>
-              <div className="bg-white group overflow-hidden">
-                {/* Photo */}
+              <div className="bg-white group overflow-hidden h-full flex flex-col">
+                {/* Photo placeholder until the real photo is available */}
                 <div className="relative h-64 lg:h-72 overflow-hidden bg-[#1a1520]">
-                  <img
-                    src={s.img}
-                    alt={s.name}
-                    className="w-full h-full object-cover object-top filter contrast-110 brightness-95 transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
-                  />
+                  <DaneSilhouette className="absolute inset-0 p-12 text-[#B4904B]/25" />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#07030B]/40 to-transparent" />
                 </div>
 
                 {/* Info */}
-                <div className="p-6 border-l-[3px] border-[#B4904B]">
+                <div className="p-6 border-l-[3px] border-[#B4904B] flex-1">
                   <p className="font-[family-name:var(--font-montserrat)] font-semibold text-[10px] tracking-[0.25em] uppercase text-[#B4904B] mb-1">
                     {s.role}
                   </p>
@@ -67,7 +64,7 @@ export default function StaffSection() {
                     {s.name}
                   </h3>
                   <p className="font-[family-name:var(--font-montserrat)] text-[#07030B]/60 text-[13px] leading-relaxed">
-                    {s.credentials}
+                    {s.details.join(" · ")}
                   </p>
                 </div>
               </div>
