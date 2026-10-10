@@ -20,3 +20,11 @@ logs/
 /.opencode-skills/
 
 *.zip
+Galeria/
+
+# Mercado Pago / base de datos local
+!.env.example
+/data/
+*.db
+*.db-wal
+*.db-shm

@@ -2,3 +2,12 @@ node_modules
 dist
 .git
 *.zip
+Galeria
+.env*
+!.env.example
+data
+*.db
+*.db-wal
+*.db-shm
+.tmp-*
+server/test
