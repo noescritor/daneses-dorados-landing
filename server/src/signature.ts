@@ -27,6 +27,15 @@ export function signManifest(manifest: string, secret: string): string {
   return createHmac("sha256", secret).update(manifest).digest("hex");
 }
 
+// El panel de Mercado Pago da una clave por pestaña (prueba y producción): se pueden listar separadas por coma.
+export function parseSecrets(raw: string | undefined): string[] {
+  return (raw ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+}
+
+export function verifyWebhookSignatureAny(input: Omit<SignatureInput, "secret">, secrets: string[]): boolean {
+  return secrets.map((secret) => verifyWebhookSignature({ ...input, secret })).some(Boolean);
+}
+
 export function verifyWebhookSignature(input: SignatureInput): boolean {
   if (!input.xSignature || !input.secret) return false;
   const { ts, v1 } = parseSignatureHeader(input.xSignature);

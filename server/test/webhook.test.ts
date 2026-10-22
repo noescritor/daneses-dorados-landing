@@ -10,6 +10,23 @@ function orderStatus(db: ReturnType<typeof makeEnv>["db"], orderId: string) {
   return (db.prepare("SELECT status FROM orders WHERE id = ?").get(orderId) as { status: string }).status;
 }
 
+describe("webhook con varias claves secretas (prueba y productivo)", () => {
+  it("acepta la firma de cualquiera de las claves configuradas y rechaza otras", async () => {
+    const env = makeEnv({ MP_WEBHOOK_SECRET: "clave-de-prueba-111, clave-productiva-222" });
+    const { json } = await checkout(env.app, { quantity: 1 });
+    env.mp.payments.set("1101", approvedPayment("1101", json.orderId, 150));
+
+    expect((await sendWebhook(env.app, "1101", { headers: signedHeaders("1101", "req-a", "clave-de-otro-333") })).status).toBe(401);
+    expect((await sendWebhook(env.app, "1101", { headers: signedHeaders("1101", "req-b", "clave-productiva-222") })).status).toBe(200);
+    expect(orderStatus(env.db, json.orderId)).toBe("paid");
+
+    const other = await checkout(env.app, { quantity: 1 });
+    env.mp.payments.set("1102", approvedPayment("1102", other.json.orderId, 150));
+    expect((await sendWebhook(env.app, "1102", { headers: signedHeaders("1102", "req-c", "clave-de-prueba-111") })).status).toBe(200);
+    expect(orderStatus(env.db, other.json.orderId)).toBe("paid");
+  });
+});
+
 describe("webhook de Mercado Pago", () => {
   it("rechaza notificaciones sin firma o con firma inválida", async () => {
     const env = makeEnv();

@@ -23,7 +23,7 @@ import {
 } from "./orders";
 import { type PaymentDeps, handlePaymentNotification, reconcileOrder } from "./payments";
 import { clientIp, pinMatches, rateLimit, signSession, verifySession } from "./security";
-import { verifyWebhookSignature } from "./signature";
+import { parseSecrets, verifyWebhookSignatureAny } from "./signature";
 import { TICKET_CODE_PATTERN, getCatalog, getTicketView, scanTicket, ticketsForOrder } from "./tickets";
 
 export interface AppDeps {
@@ -160,15 +160,17 @@ export function createApp(deps: AppDeps): Hono {
   });
 
   app.post("/api/webhooks/mercadopago", async (c) => {
-    if (!cfg.MP_WEBHOOK_SECRET || !mp) return c.json({ error: "not_configured" }, 503);
+    const secrets = parseSecrets(cfg.MP_WEBHOOK_SECRET);
+    if (secrets.length === 0 || !mp) return c.json({ error: "not_configured" }, 503);
     const dataId = c.req.query("data.id");
     const requestId = c.req.header("x-request-id");
     const signature = c.req.header("x-signature");
-    if (!verifyWebhookSignature({ xSignature: signature, xRequestId: requestId, dataId, secret: cfg.MP_WEBHOOK_SECRET })) {
-      log("Webhook rechazado: firma inválida (¿clave secreta distinta a la del panel de Mercado Pago?)", {
+    if (!verifyWebhookSignatureAny({ xSignature: signature, xRequestId: requestId, dataId }, secrets)) {
+      log("Webhook rechazado: firma inválida (la clave de MP_WEBHOOK_SECRET no coincide; el panel tiene una clave por pestaña, prueba y productivo)", {
         dataId,
         tieneFirma: Boolean(signature),
         tieneRequestId: Boolean(requestId),
+        clavesConfiguradas: secrets.length,
       });
       return c.json({ error: "invalid_signature" }, 401);
     }
