@@ -21,7 +21,7 @@ import {
   getOrder,
   setPreference,
 } from "./orders";
-import { type PaymentDeps, handlePaymentNotification } from "./payments";
+import { type PaymentDeps, handlePaymentNotification, reconcileOrder } from "./payments";
 import { clientIp, pinMatches, rateLimit, signSession, verifySession } from "./security";
 import { verifyWebhookSignature } from "./signature";
 import { TICKET_CODE_PATTERN, getCatalog, getTicketView, scanTicket, ticketsForOrder } from "./tickets";
@@ -33,8 +33,12 @@ export interface AppDeps {
   mailer: Mailer;
   now?: () => Date;
   log?: (message: string, meta?: Record<string, unknown>) => void;
+  info?: (message: string, meta?: Record<string, unknown>) => void;
   serveFrontend?: boolean;
 }
+
+const RECONCILE_WINDOW_MS = 48 * 60 * 60 * 1000;
+const RECONCILE_MIN_INTERVAL_MS = 5000;
 
 const checkoutSchema = z.object({
   tierId: z.string().min(1).max(40),
@@ -62,7 +66,9 @@ export function createApp(deps: AppDeps): Hono {
   const now = deps.now ?? (() => new Date());
   const log = deps.log ?? ((message, meta) => console.error(message, meta ?? ""));
   const paymentDeps: PaymentDeps = { db, mp: mp as MercadoPagoClient, mailer, cfg, now, log };
+  const info = deps.info ?? ((message, meta) => console.log(message, meta ?? ""));
   const inflightPreferences = new Map<string, Promise<string>>();
+  const lastReconcile = new Map<string, number>();
 
   const app = new Hono();
   app.use("*", secureHeaders());
@@ -159,6 +165,11 @@ export function createApp(deps: AppDeps): Hono {
     const requestId = c.req.header("x-request-id");
     const signature = c.req.header("x-signature");
     if (!verifyWebhookSignature({ xSignature: signature, xRequestId: requestId, dataId, secret: cfg.MP_WEBHOOK_SECRET })) {
+      log("Webhook rechazado: firma inválida (¿clave secreta distinta a la del panel de Mercado Pago?)", {
+        dataId,
+        tieneFirma: Boolean(signature),
+        tieneRequestId: Boolean(requestId),
+      });
       return c.json({ error: "invalid_signature" }, 401);
     }
 
@@ -172,6 +183,7 @@ export function createApp(deps: AppDeps): Hono {
     try {
       const result = await handlePaymentNotification(paymentDeps, dataId);
       completeWebhookEvent(db, key, now());
+      info("Webhook de pago procesado", { dataId, result });
       return c.json({ ok: true, result });
     } catch (err) {
       log("Falló el procesamiento del webhook", { dataId, error: String(err) });
@@ -179,10 +191,23 @@ export function createApp(deps: AppDeps): Hono {
     }
   });
 
-  app.get("/api/orders/:id", (c) => {
+  app.get("/api/orders/:id", async (c) => {
     const id = c.req.param("id");
-    const order = ORDER_ID.test(id) ? getOrder(db, id) : undefined;
+    let order = ORDER_ID.test(id) ? getOrder(db, id) : undefined;
     if (!order) return c.json({ error: "not_found" }, 404);
+
+    const open = order.status === "pending" || order.status === "expired";
+    const recent = now().getTime() - new Date(order.created_at).getTime() < RECONCILE_WINDOW_MS;
+    if (mp && open && recent && now().getTime() - (lastReconcile.get(id) ?? 0) >= RECONCILE_MIN_INTERVAL_MS) {
+      if (lastReconcile.size > 1000) lastReconcile.clear();
+      lastReconcile.set(id, now().getTime());
+      try {
+        if (await reconcileOrder(paymentDeps, id)) info("Orden conciliada con Mercado Pago", { orderId: id });
+        order = getOrder(db, id)!;
+      } catch (err) {
+        log("No se pudo conciliar la orden con Mercado Pago", { orderId: id, error: String(err) });
+      }
+    }
     const tier = get<TierRow>(db, "SELECT * FROM tiers WHERE id = ?", order.tier_id)!;
     const event = order.event_id ? get<EventRow>(db, "SELECT * FROM events WHERE id = ?", order.event_id) : undefined;
     return c.json({

@@ -16,7 +16,7 @@ export function fakeMp() {
   const payments = new Map<string, MpPayment>();
   const refunds: { paymentId: string; key: string }[] = [];
   const preferences: PreferenceInput[] = [];
-  const state = { failPreference: false, failGetPayment: false };
+  const state = { failPreference: false, failGetPayment: false, searchCalls: 0 };
   let seq = 0;
   const client: MercadoPagoClient = {
     async createPreference(input) {
@@ -30,6 +30,10 @@ export function fakeMp() {
       const payment = payments.get(id);
       if (!payment) throw new Error(`pago ${id} no existe`);
       return payment;
+    },
+    async searchPaymentsByReference(reference) {
+      state.searchCalls++;
+      return [...payments.values()].filter((p) => p.external_reference === reference);
     },
     async refundPayment(paymentId, key) {
       refunds.push({ paymentId, key });
@@ -60,7 +64,7 @@ export function makeEnv(overrides: Record<string, string> = {}) {
     },
   };
   const clock = { now: new Date("2026-10-10T12:00:00.000Z") };
-  const app = createApp({ db, cfg, mp: mp.client, mailer, now: () => clock.now, log: () => {}, serveFrontend: false });
+  const app = createApp({ db, cfg, mp: mp.client, mailer, now: () => clock.now, log: () => {}, info: () => {}, serveFrontend: false });
   return { cfg, db, mp, sent, clock, app };
 }
 

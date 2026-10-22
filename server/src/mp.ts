@@ -33,6 +33,7 @@ export interface PreferenceInput {
 export interface MercadoPagoClient {
   createPreference(input: PreferenceInput): Promise<{ id: string; initPoint: string }>;
   getPayment(paymentId: string): Promise<MpPayment>;
+  searchPaymentsByReference(externalReference: string): Promise<MpPayment[]>;
   refundPayment(paymentId: string, idempotencyKey: string): Promise<void>;
 }
 
@@ -93,6 +94,11 @@ export function createMpClient(accessToken: string, fetchImpl: typeof fetch = fe
     async getPayment(paymentId) {
       if (!/^\d{1,20}$/.test(paymentId)) throw new MpApiError(400, "payment id inválido");
       return (await call("GET", `/v1/payments/${paymentId}`)) as MpPayment;
+    },
+    async searchPaymentsByReference(externalReference) {
+      if (!/^[0-9a-f-]{36}$/i.test(externalReference)) throw new MpApiError(400, "referencia inválida");
+      const data = await call("GET", `/v1/payments/search?external_reference=${externalReference}&sort=date_created&criteria=desc&limit=10`);
+      return (data.results ?? []) as MpPayment[];
     },
     async refundPayment(paymentId, idempotencyKey) {
       if (!/^\d{1,20}$/.test(paymentId)) throw new MpApiError(400, "payment id inválido");

@@ -2,7 +2,7 @@ import type { Config } from "./config";
 import type { DB } from "./db";
 import { get } from "./db";
 import type { Mailer } from "./mailer";
-import type { MercadoPagoClient } from "./mp";
+import type { MercadoPagoClient, MpPayment } from "./mp";
 import {
   type EventRow,
   type OrderRow,
@@ -78,14 +78,31 @@ export async function retryPendingEmails(deps: PaymentDeps): Promise<number> {
 }
 
 export async function handlePaymentNotification(deps: PaymentDeps, paymentId: string): Promise<PaymentResult> {
-  const payment = await deps.mp.getPayment(paymentId);
+  return processPayment(deps, await deps.mp.getPayment(paymentId));
+}
+
+// Respaldo del webhook: pregunta a Mercado Pago por los pagos de la orden y aplica los aprobados
+// con la misma lógica (idempotente) que el webhook.
+export async function reconcileOrder(deps: PaymentDeps, orderId: string): Promise<boolean> {
+  const order = getOrder(deps.db, orderId);
+  if (!order || (order.status !== "pending" && order.status !== "expired")) return false;
+  let changed = false;
+  for (const payment of await deps.mp.searchPaymentsByReference(orderId)) {
+    if (payment.status !== "approved") continue;
+    const result = await processPayment(deps, payment);
+    if (result === "paid" || result === "refunded_stock_gone" || result === "refunded_duplicate") changed = true;
+  }
+  return changed;
+}
+
+export async function processPayment(deps: PaymentDeps, payment: MpPayment): Promise<PaymentResult> {
   const orderId = payment.external_reference;
   if (!orderId) return "ignored";
   const order = getOrder(deps.db, orderId);
   if (!order) return "ignored";
 
   if (payment.currency_id !== order.currency || Math.round(payment.transaction_amount * 100) !== order.total_cents) {
-    deps.log?.("Monto o moneda del pago no coincide con la orden", { orderId, paymentId });
+    deps.log?.("Monto o moneda del pago no coincide con la orden", { orderId, paymentId: String(payment.id) });
     return "amount_mismatch";
   }
 
