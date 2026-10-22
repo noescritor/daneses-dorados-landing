@@ -111,7 +111,9 @@ describe("boletos y escáner", () => {
     const ok = await env.app.request(`/api/tickets/${code}/qr.svg`);
     expect(ok.status).toBe(200);
     expect(ok.headers.get("content-type")).toContain("image/svg+xml");
-    expect(await ok.text()).toContain("<svg");
+    const svg = await ok.text();
+    expect(svg).toContain("<svg");
+    expect(svg).toMatch(/width="600"/);
     expect((await env.app.request(`/api/tickets/${"B".repeat(22)}/qr.svg`)).status).toBe(404);
   });
 

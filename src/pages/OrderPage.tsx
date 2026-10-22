@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import DownloadTickets from "../components/DownloadTickets";
 import PageShell, { bodyText, goldButton, pageTitle } from "./PageShell";
 import { ApiError, type OrderView, fetchOrder, formatEventDate, formatMXN } from "../lib/api";
 
@@ -76,7 +77,7 @@ export default function OrderPage({ id }: { id: string }) {
           <p className={`${bodyText} mt-4`}>
             {returned === "failure"
               ? "Puedes intentarlo de nuevo desde la sección de boletos mientras tu reserva siga vigente."
-              : "En cuanto Mercado Pago confirme el pago te mostraremos tus boletos aquí y te los enviaremos por correo. No cierres esta página."}
+              : "En cuanto Mercado Pago confirme el pago te mostraremos tus boletos aquí para que los descargues. No cierres esta página."}
           </p>
           <p className={`${bodyText} mt-4`}>
             Tu reserva vence en <Countdown until={order.reservedUntil} />
@@ -91,8 +92,23 @@ export default function OrderPage({ id }: { id: string }) {
           <p className={`${bodyText} mt-4`}>
             {order.quantity > 1 ? `${order.quantity} × ` : ""}
             {order.tierName}
-            {order.event ? ` · Daneses vs ${order.event.rival}, ${formatEventDate(order.event.startsAt)}` : " · válido en todos los partidos en casa"} · {formatMXN(order.totalCents)} MXN. Te enviamos una copia a tu correo.
+            {order.event ? ` · Daneses vs ${order.event.rival}, ${formatEventDate(order.event.startsAt)}` : " · válido en todos los partidos en casa"} · {formatMXN(order.totalCents)} MXN.
           </p>
+
+          <div role="alert" className="mt-6 border-2 border-[#B4904B] bg-[#B4904B]/10 p-5 flex gap-4 items-start">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#B4904B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5" aria-hidden="true">
+              <path d="M12 3l10 18H2L12 3z" />
+              <path d="M12 10v5M12 18h.01" />
+            </svg>
+            <div className="grid gap-3">
+              <p className="font-[family-name:var(--font-gin)] font-black uppercase text-2xl leading-none">Descarga tu boleto ahora</p>
+              <p className={bodyText}>
+                Es tu entrada al partido. Guárdalo en tu teléfono antes de salir de esta página: descárgalo o haz una captura de pantalla de los códigos QR.
+              </p>
+              <DownloadTickets codes={order.tickets.map((t) => t.code)} />
+            </div>
+          </div>
+
           <ul className="mt-8 grid gap-4 sm:grid-cols-2">
             {order.tickets.map((t, i) => (
               <li key={t.code} className="border border-[#B4904B]/30 p-4 flex items-center gap-4">
@@ -111,7 +127,7 @@ export default function OrderPage({ id }: { id: string }) {
         <>
           <h1 className={pageTitle}>Tu reserva expiró</h1>
           <p className={`${bodyText} mt-4`}>
-            Liberamos tus lugares porque no recibimos el pago a tiempo. Si ya pagaste, espera unos minutos: si aún hay lugares, tus boletos aparecerán aquí y llegarán a tu correo; si no, te reembolsamos automáticamente.
+            Liberamos tus lugares porque no recibimos el pago a tiempo. Si ya pagaste, espera unos minutos: si aún hay lugares, tus boletos aparecerán aquí; si no, te reembolsamos automáticamente.
           </p>
           <a href="/#boletos" className={`${goldButton} mt-8`}>Volver a boletos</a>
         </>

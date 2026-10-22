@@ -7,7 +7,7 @@ Sitio web (Vite + React) y servicio de venta de boletos con **Mercado Pago Check
 1. El navegador solo manda **IDs y cantidad** (`tierId`, `eventId`, `quantity`) más nombre y correo. El **precio y el total los calcula el servidor** desde su catálogo.
 2. El servidor **aparta los lugares 15 minutos** (de forma atómica, sin sobreventa), crea la preferencia de Mercado Pago con la misma expiración y devuelve el link de pago.
 3. El comprador paga en Mercado Pago. La página `/pedido/:id` solo **consulta** el estado; nunca lo marca como pagado.
-4. Mercado Pago llama al **webhook**. El servidor valida la firma `x-signature`, **consulta el pago por ID** a la API de Mercado Pago, verifica que sea `approved`, que el monto y la moneda coincidan con la orden, y entonces emite los boletos y manda el correo.
+4. Mercado Pago llama al **webhook**. El servidor valida la firma `x-signature`, **consulta el pago por ID** a la API de Mercado Pago, verifica que sea `approved`, que el monto y la moneda coincidan con la orden, y entonces emite los boletos. La página del pedido los muestra con un aviso y un botón **"Descargar boletos"** (una sola imagen PNG con todos los QR). El correo es opcional.
 5. Cada boleto tiene un **código QR único**. El staff lo escanea en `/scan`; el primer escaneo lo marca como usado y los siguientes se rechazan.
 
 | Requisito | Dónde / cómo |
@@ -50,7 +50,7 @@ Genera un secreto de sesión:
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-Sin `MP_ACCESS_TOKEN` el sitio carga, pero el checkout responde 503 ("pagos no disponibles"). Sin `RESEND_API_KEY` los links de los boletos se imprimen en la consola del servidor en vez de mandarse por correo.
+Sin `MP_ACCESS_TOKEN` el sitio carga, pero el checkout responde 503 ("pagos no disponibles"). El envío por correo es opcional (`RESEND_API_KEY`). Sin él, en desarrollo los links de los boletos se imprimen en la consola; en producción **no se escriben en los registros** (funcionan como contraseña) y el comprador los descarga desde la página del pedido.
 
 ## Probar en el sandbox de Mercado Pago
 
@@ -74,7 +74,7 @@ Sin `MP_ACCESS_TOKEN` el sitio carga, pero el checkout responde 503 ("pagos no d
 
    (Con `PUBLIC_BASE_URL` https, cada preferencia también lleva `notification_url=…?source_news=webhooks` y `auto_return`.)
 5. **Compra de prueba:** abre el sitio en una **ventana de incógnito**, elige un boleto, paga con el **usuario comprador de prueba** y una tarjeta de prueba. El nombre del titular define el resultado: `APRO` aprobado, `OTHE` rechazo general, `CONT` pendiente, `FUND` fondos insuficientes. Tarjetas de México de la documentación: Visa `4075 5957 1648 3764`, Mastercard `5474 9254 3267 0366` (CVV `123`, vence `11/30`). Verifica la lista vigente en la [documentación de tarjetas de prueba](https://www.mercadopago.com.mx/developers/es/docs/checkout-api/integration-test/test-cards).
-6. **Comprueba el resultado:** `/pedido/:id` pasa a "Pago confirmado", llega el correo (o aparece en la consola) y el boleto abre en `/t/:codigo`.
+6. **Comprueba el resultado:** `/pedido/:id` pasa a "Pago confirmado", muestra la alerta **"Descarga tu boleto ahora"** con el botón de descarga, y cada boleto abre en `/t/:codigo`.
 7. **Escáner:** entra a `/scan` con `STAFF_PIN`, elige el partido y escanea (o pega el código). Un segundo escaneo del mismo boleto debe mostrar "Boleto ya usado".
 
 El botón **Simular** del panel de webhooks también sirve, pero necesita el ID de un pago que ya exista.
@@ -106,7 +106,7 @@ El `Dockerfile` construye la web y arranca el servidor Node en el puerto **3000*
 
 1. **Puerto:** en EasyPanel configura el puerto del servicio en **3000** (antes era 80 con nginx).
 2. **Volumen persistente:** monta un volumen en **`/data`**. Ahí vive la base SQLite; **sin volumen se pierden las ventas en cada redeploy**.
-3. **Variables de entorno** (el servidor se niega a arrancar en producción si falta alguna): `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET`, `STAFF_PIN`, `SESSION_SECRET`, `PUBLIC_BASE_URL` (https, el dominio final). Recomendadas: `RESEND_API_KEY`, `MAIL_FROM`, `CAPACITY_GENERAL`, `CAPACITY_VIP`.
+3. **Variables de entorno** (el servidor se niega a arrancar en producción si falta alguna): `MP_ACCESS_TOKEN`, `MP_WEBHOOK_SECRET`, `STAFF_PIN`, `SESSION_SECRET`, `PUBLIC_BASE_URL` (https, el dominio final). Recomendadas: `CAPACITY_GENERAL`, `CAPACITY_VIP`. Opcionales: `RESEND_API_KEY` y `MAIL_FROM` (correo de boletos).
 4. **Dominio con HTTPS** y, en el panel de Mercado Pago, el webhook de **producción** apuntando a `https://TU-DOMINIO/api/webhooks/mercadopago` con su propia clave secreta.
 5. **Una sola instancia:** SQLite no es para varias réplicas. Para escalar, hay que mover `server/src/db.ts` a Postgres.
 6. **Respaldos:** copia periódicamente `/data/daneses.db` (por ejemplo con `sqlite3 daneses.db ".backup respaldo.db"`).

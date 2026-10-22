@@ -144,13 +144,13 @@ export default function CheckoutModal({ selection, reservationMinutes, onClose }
               autoComplete="email"
               placeholder="ana@ejemplo.com"
             />
-            <p className="mt-1.5 text-[11px] text-white/40 font-[family-name:var(--font-montserrat)]">Aquí te enviaremos tus boletos con el código QR.</p>
+            <p className="mt-1.5 text-[11px] text-white/40 font-[family-name:var(--font-montserrat)]">Es el correo de tu comprobante de pago de Mercado Pago.</p>
           </div>
 
           <label className="flex items-start gap-3 cursor-pointer">
             <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} required className="mt-1 accent-[#B4904B]" />
             <span className="text-[12px] leading-snug text-white/60 font-[family-name:var(--font-montserrat)]">
-              Acepto el aviso de privacidad y las condiciones de compra. Mis datos se usan solo para emitir y enviar mis boletos.
+              Acepto el aviso de privacidad y las condiciones de compra. Mis datos se usan solo para procesar mi compra y emitir mis boletos.
             </span>
           </label>
 

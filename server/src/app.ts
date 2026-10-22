@@ -233,7 +233,7 @@ export function createApp(deps: AppDeps): Hono {
   app.get("/api/tickets/:code/qr.svg", async (c) => {
     const code = c.req.param("code");
     if (!TICKET_CODE_PATTERN.test(code) || !getTicketView(db, code)) return c.json({ error: "not_found" }, 404);
-    const svg = await QRCode.toString(`${cfg.PUBLIC_BASE_URL}/t/${code}`, { type: "svg", margin: 1, errorCorrectionLevel: "M" });
+    const svg = await QRCode.toString(`${cfg.PUBLIC_BASE_URL}/t/${code}`, { type: "svg", margin: 1, width: 600, errorCorrectionLevel: "M" });
     return c.body(svg, 200, { "Content-Type": "image/svg+xml" });
   });
 

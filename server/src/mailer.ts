@@ -35,10 +35,15 @@ export function renderTicketEmail(email: TicketEmail): { subject: string; html: 
   return { subject, html, text };
 }
 
-export function createMailer(cfg: Pick<Config, "RESEND_API_KEY" | "MAIL_FROM">, fetchImpl: typeof fetch = fetch): Mailer {
+export function createMailer(cfg: Pick<Config, "RESEND_API_KEY" | "MAIL_FROM" | "isProd">, fetchImpl: typeof fetch = fetch): Mailer {
   if (!cfg.RESEND_API_KEY) {
     return {
       async sendTickets(email) {
+        // Los links de los boletos funcionan como contraseña: en producción no se escriben en los registros.
+        if (cfg.isProd) {
+          console.log(`[mailer] correo no configurado; boletos de la orden ${email.orderId} (${email.tickets.length}) disponibles en la página del pedido`);
+          return;
+        }
         console.log(`[mailer] RESEND_API_KEY no configurada; boletos para ${email.to}:`);
         for (const t of email.tickets) console.log(`  ${t.url}`);
       },

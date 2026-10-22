@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import DownloadTickets from "../components/DownloadTickets";
 import PageShell, { bodyText, goldButton, pageTitle } from "./PageShell";
 import { type TicketView, fetchTicket, formatEventDate } from "../lib/api";
 
@@ -60,6 +61,11 @@ export default function TicketPage({ code }: { code: string }) {
             {status.text}
           </span>
           <p className={`${bodyText} mt-4 text-center`}>{ticket.buyerName}</p>
+          {ticket.status === "valid" && (
+            <div className="mt-5">
+              <DownloadTickets codes={[ticket.code]} filename="boleto-daneses-dorados.png" />
+            </div>
+          )}
           {ticket.tier.kind === "pass" && ticket.scans.length > 0 && (
             <p className="mt-2 text-[12px] text-white/40 font-[family-name:var(--font-montserrat)]">Entradas registradas: {ticket.scans.length}</p>
           )}
