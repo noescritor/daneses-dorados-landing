@@ -1,10 +1,11 @@
 import { ScrollReveal, DaneSilhouette } from "./ui";
 
-const staff = [
+const staff: { name: string; role: string; details: string[]; img?: string }[] = [
   {
-    name: "José Eduardo Icelo Rossano",
+    name: "José Alfredo Bernal Guzmán",
     role: "Entrenador Principal",
-    details: ["Puebla, Puebla", "36 años", "Nivel FIVB 2"],
+    details: ["50 años", "Lic. en Ciencias del Deporte y la Actividad Física", "Máster en Voleibol", "Entrenador de selecciones nacionales femeniles"],
+    img: "/staff/alfredo-bernal.webp",
   },
   {
     name: "Eduardo Miranda Kempis",
@@ -49,9 +50,21 @@ export default function StaffSection() {
           {staff.map((s, i) => (
             <ScrollReveal key={s.name} delay={i * 0.1}>
               <div className="bg-white group overflow-hidden h-full flex flex-col">
-                {/* Photo placeholder until the real photo is available */}
+                {/* Photo (or silhouette placeholder until the real photo is available) */}
                 <div className="relative h-64 lg:h-72 overflow-hidden bg-[#1a1520]">
-                  <DaneSilhouette className="absolute inset-0 p-12 text-[#B4904B]/25" />
+                  {s.img ? (
+                    <img
+                      src={s.img}
+                      alt={s.name}
+                      width={640}
+                      height={800}
+                      className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <DaneSilhouette className="absolute inset-0 p-12 text-[#B4904B]/25" />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#07030B]/40 to-transparent" />
                 </div>
 

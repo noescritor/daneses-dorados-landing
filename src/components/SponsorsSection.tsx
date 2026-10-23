@@ -2,6 +2,7 @@ import { ScrollReveal } from "./ui";
 
 // Logos en /public/sponsors (negro sobre transparente, márgenes recortados)
 const sponsors = [
+  { name: "Indoor Sports", file: "indoor-sports", w: 480, h: 178 },
   { name: "Universidad ESEF Cuautla", file: "universidad-esef-cuautla", w: 199, h: 192 },
   { name: "Universidad Dorados", file: "universidad-dorados", w: 188, h: 192 },
   { name: "UIMEM", file: "uimem", w: 480, h: 186 },
