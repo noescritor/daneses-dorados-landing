@@ -23,6 +23,7 @@ import {
 } from "./orders";
 import { type PaymentDeps, handlePaymentNotification, reconcileOrder } from "./payments";
 import { clientIp, pinMatches, rateLimit, signSession, verifySession } from "./security";
+import { getSalesReport } from "./report";
 import { parseSecrets, verifyWebhookSignatureAny } from "./signature";
 import { TICKET_CODE_PATTERN, getCatalog, getTicketView, scanTicket, ticketsForOrder } from "./tickets";
 
@@ -271,6 +272,8 @@ export function createApp(deps: AppDeps): Hono {
       })),
     }),
   );
+
+  app.get("/api/staff/report", requireStaff, (c) => c.json(getSalesReport(db, now())));
 
   app.post("/api/staff/scan", requireStaff, rateLimit({ windowMs: 60_000, max: 120 }), async (c) => {
     const body = scanSchema.safeParse(await c.req.json().catch(() => null));

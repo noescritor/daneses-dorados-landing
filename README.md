@@ -88,10 +88,17 @@ pnpm typecheck
 
 Las pruebas usan una base en memoria y un cliente de Mercado Pago simulado, así que no necesitan credenciales.
 
+## Reporte de ventas
+
+- **En el navegador:** `/ventas` (con el mismo PIN del staff que `/scan`). Muestra ingresos, boletos emitidos, pases vendidos y entradas registradas; por partido, los lugares vendidos por zona separando **boletos sueltos y pases**, los apartados sin pagar y las entradas escaneadas; y por producto, boletos e ingresos. Solo cifras agregadas: no muestra nombres ni correos de compradores.
+- **En la consola:** `pnpm admin report` (dentro del contenedor, en la consola de EasyPanel).
+- Cuenta únicamente pedidos **pagados** (los reembolsados salen aparte) e incluye los partidos ya jugados. Un pase aparece en todos los partidos que cubre, pero su dinero no se reparte por partido: está solo en el total.
+
 ## Administración
 
 ```bash
 pnpm admin list
+pnpm admin report
 pnpm admin set-price pass_vip 1700            # solo afecta compras nuevas
 pnpm admin set-capacity 2026-10-24-dragones general 400
 pnpm admin add-event 2026-12-12-semifinal "Por definir" 2026-12-12T19:00:00-06:00 semifinal

@@ -1,5 +1,6 @@
 import { loadConfig } from "../src/config";
 import { all, openDb, run } from "../src/db";
+import { getSalesReport } from "../src/report";
 import { createEvent, seedIfEmpty } from "../src/seed";
 
 try {
@@ -16,6 +17,7 @@ const [command, ...args] = process.argv.slice(2);
 
 const USAGE = `Uso: pnpm admin <comando>
   list                                          Muestra precios, partidos e inventario
+  report                                        Ventas por partido, ingresos y entradas escaneadas
   set-price <tier> <pesos>                      Cambia el precio (solo afecta compras nuevas)
   set-capacity <partido> <general|vip> <n>      Cambia la capacidad de un partido
   add-event <id> <rival> <fecha-ISO> [etapa]    Agrega un partido en casa (p. ej. una semifinal)
@@ -26,6 +28,30 @@ switch (command) {
     console.table(all(db, "SELECT id, name, kind, seat_class, price_cents / 100.0 AS pesos, active FROM tiers"));
     console.table(all(db, "SELECT id, rival, starts_at, stage, sales_open FROM events ORDER BY starts_at"));
     console.table(all(db, "SELECT event_id, seat_class, capacity, sold, reserved FROM inventory ORDER BY event_id, seat_class"));
+    break;
+  }
+  case "report": {
+    const r = getSalesReport(db, new Date());
+    const mxn = (cents: number) => `$${(cents / 100).toLocaleString("es-MX")}`;
+    console.table(
+      r.events.map((e) => ({
+        partido: `vs ${e.rival}`,
+        fecha: e.startsAt.slice(0, 10),
+        jugado: e.played ? "sí" : "no",
+        "General vendidos": `${e.sold.general}/${e.capacity.general}`,
+        "(sueltos + pases)": `${e.singles.general} + ${e.passes.general}`,
+        "VIP vendidos": `${e.sold.vip}/${e.capacity.vip}`,
+        "(sueltos + pases) ": `${e.singles.vip} + ${e.passes.vip}`,
+        apartados: e.reserved.general + e.reserved.vip,
+        escaneados: e.scanned.general + e.scanned.vip,
+        "ingreso sueltos": mxn(e.singlesRevenueCents),
+      })),
+    );
+    console.table(r.products.map((p) => ({ producto: p.name, pedidos: p.orders, boletos: p.units, ingresos: mxn(p.revenueCents) })));
+    console.log(
+      `Ingresos: ${mxn(r.totals.revenueCents)} | boletos emitidos: ${r.totals.ticketsIssued} | pases: ${r.totals.passesSold} | ` +
+        `entradas escaneadas: ${r.totals.entriesScanned} | reembolsados: ${r.totals.refundedOrders} (${mxn(r.totals.refundedCents)}) | pedidos por pagar: ${r.totals.pendingOrders}`,
+    );
     break;
   }
   case "set-price": {

@@ -12,6 +12,7 @@ import FooterSection from "./components/FooterSection";
 import OrderPage from "./pages/OrderPage";
 import TicketPage from "./pages/TicketPage";
 import ScanPage from "./pages/ScanPage";
+import ReportPage from "./pages/ReportPage";
 
 function Landing() {
   return (
@@ -41,6 +42,7 @@ export default function App() {
   if (ticket) return <TicketPage code={ticket[1]} />;
 
   if (/^\/scan\/?$/.test(path)) return <ScanPage />;
+  if (/^\/ventas\/?$/.test(path)) return <ReportPage />;
 
   return <Landing />;
 }

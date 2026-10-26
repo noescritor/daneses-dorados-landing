@@ -110,6 +110,42 @@ export const fetchStaffEvents = () => request<{ events: { id: string; rival: str
 export const scanCode = (code: string, eventId: string) =>
   request<ScanResult>("/api/staff/scan", { method: "POST", body: JSON.stringify({ code, eventId }) });
 
+type ByZone = { general: number; vip: number };
+
+export interface EventReport {
+  id: string;
+  rival: string;
+  startsAt: string;
+  stage: string;
+  played: boolean;
+  salesOpen: boolean;
+  capacity: ByZone;
+  sold: ByZone;
+  reserved: ByZone;
+  available: ByZone;
+  singles: ByZone;
+  passes: ByZone;
+  scanned: ByZone;
+  singlesRevenueCents: number;
+}
+
+export interface SalesReport {
+  generatedAt: string;
+  events: EventReport[];
+  products: { id: string; name: string; kind: "single" | "pass"; orders: number; units: number; revenueCents: number }[];
+  totals: {
+    revenueCents: number;
+    ticketsIssued: number;
+    passesSold: number;
+    entriesScanned: number;
+    refundedCents: number;
+    refundedOrders: number;
+    pendingOrders: number;
+  };
+}
+
+export const fetchReport = () => request<SalesReport>("/api/staff/report");
+
 export const formatMXN = (cents: number) =>
   new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", minimumFractionDigits: 0 }).format(cents / 100);
 

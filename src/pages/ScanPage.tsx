@@ -235,9 +235,14 @@ export default function ScanPage() {
                 ))}
               </select>
             </div>
-            <button type="button" onClick={onLogout} className="text-sm text-white/50 underline underline-offset-4 hover:text-white">
-              Salir
-            </button>
+            <div className="flex items-center gap-5 text-sm">
+              <a href="/ventas" className="text-white/50 underline underline-offset-4 hover:text-white">
+                Ventas
+              </a>
+              <button type="button" onClick={onLogout} className="text-white/50 underline underline-offset-4 hover:text-white">
+                Salir
+              </button>
+            </div>
           </div>
           {eventId && <Scanner key={eventId} eventId={eventId} onUnauthorized={unauthorized} />}
         </div>
