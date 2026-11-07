@@ -1,14 +1,14 @@
 import { ScrollReveal, Btn } from "./ui";
 
 export const games = [
-  { date: "20 Oct", day: "Mar", rival: "Ángeles CD México", venue: "Gimnasio Olímpico Juan de la Barrera, CDMX", time: "19:00 h", home: false },
-  { date: "24 Oct", day: "Sáb", rival: "Dragones de Querétaro", venue: "Salón Poliforum, Dorados Convention & Resort, Oaxtepec, Morelos", time: "18:00 h", home: true },
-  { date: "31 Oct", day: "Sáb", rival: "Tapatíos", venue: "Estadio de Voleibol Joly Ramírez, Guadalajara, Jalisco", time: "20:00 h", home: false },
-  { date: "07 Nov", day: "Sáb", rival: "Aztecas", venue: "Salón Poliforum, Dorados Convention & Resort, Oaxtepec, Morelos", time: "18:00 h", home: true },
-  { date: "14 Nov", day: "Sáb", rival: "Ángeles CD México", venue: "Salón Poliforum, Dorados Convention & Resort, Oaxtepec, Morelos", time: "18:00 h", home: true },
-  { date: "18 Nov", day: "Mié", rival: "Dragones de Querétaro", venue: "Auditorio Arteaga, Querétaro, Qro.", time: "19:00 h", home: false },
-  { date: "21 Nov", day: "Sáb", rival: "Tapatíos", venue: "Salón Poliforum, Dorados Convention & Resort, Oaxtepec, Morelos", time: "18:00 h", home: true },
-  { date: "05 Dic", day: "Sáb", rival: "Aztecas", venue: "Ciudad Deportiva Juan Fernández Albarrán, Zinacantepec, Edo. de México", time: "19:00 h", home: false },
+  { date: "20 Oct", day: "Mar", rival: "Ángeles CD México", venue: "Gimnasio Olímpico Juan de la Barrera, CDMX", time: "19:00 h", startsAt: "2026-10-20T19:00:00-06:00", home: false },
+  { date: "24 Oct", day: "Sáb", rival: "Dragones de Querétaro", venue: "Salón Poliforum, Dorados Convention & Resort, Oaxtepec, Morelos", time: "18:00 h", startsAt: "2026-10-24T18:00:00-06:00", home: true },
+  { date: "31 Oct", day: "Sáb", rival: "Tapatíos", venue: "Estadio de Voleibol Joly Ramírez, Guadalajara, Jalisco", time: "20:00 h", startsAt: "2026-10-31T20:00:00-06:00", home: false },
+  { date: "07 Nov", day: "Sáb", rival: "Aztecas", venue: "Salón Poliforum, Dorados Convention & Resort, Oaxtepec, Morelos", time: "18:00 h", startsAt: "2026-11-07T18:00:00-06:00", home: true },
+  { date: "14 Nov", day: "Sáb", rival: "Ángeles CD México", venue: "Salón Poliforum, Dorados Convention & Resort, Oaxtepec, Morelos", time: "18:00 h", startsAt: "2026-11-14T18:00:00-06:00", home: true },
+  { date: "18 Nov", day: "Mié", rival: "Dragones de Querétaro", venue: "Auditorio Arteaga, Querétaro, Qro.", time: "19:00 h", startsAt: "2026-11-18T19:00:00-06:00", home: false },
+  { date: "21 Nov", day: "Sáb", rival: "Tapatíos", venue: "Salón Poliforum, Dorados Convention & Resort, Oaxtepec, Morelos", time: "18:00 h", startsAt: "2026-11-21T18:00:00-06:00", home: true },
+  { date: "05 Dic", day: "Sáb", rival: "Aztecas", venue: "Ciudad Deportiva Juan Fernández Albarrán, Zinacantepec, Edo. de México", time: "19:00 h", startsAt: "2026-12-05T19:00:00-06:00", home: false },
 ];
 
 export default function CalendarSection() {

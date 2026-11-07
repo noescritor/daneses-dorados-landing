@@ -1,7 +1,23 @@
 import { useCountdown } from "./ui";
 import { useState, useEffect, useRef } from "react";
+import { games } from "./CalendarSection";
 
-const TARGET = new Date("2026-10-24T18:00:00-06:00");
+const homeGames = games.filter((g) => g.home);
+
+/* Next home game that hasn't started yet; re-evaluated every tick so the bar
+   rolls over to the following match on its own once a game begins. */
+function nextHomeGame(now: number) {
+  return homeGames.find((g) => new Date(g.startsAt).getTime() > now);
+}
+
+function useNow(intervalMs = 1000) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), intervalMs);
+    return () => clearInterval(id);
+  }, [intervalMs]);
+  return now;
+}
 
 function FlipUnit({ value, label }: { value: number; label: string }) {
   const [prev, setPrev] = useState(value);
@@ -37,7 +53,15 @@ function FlipUnit({ value, label }: { value: number; label: string }) {
 }
 
 export default function NextGameBar() {
-  const { days, hours, minutes, seconds } = useCountdown(TARGET);
+  const now = useNow();
+  const game = nextHomeGame(now);
+  if (!game) return null;
+  return <NextGameBarContent game={game} />;
+}
+
+function NextGameBarContent({ game }: { game: (typeof games)[number] }) {
+  const target = new Date(game.startsAt);
+  const { days, hours, minutes, seconds } = useCountdown(target);
 
   return (
     <div className="bg-[#07030B] border-t border-b border-[#B4904B]/25">
@@ -51,7 +75,7 @@ export default function NextGameBar() {
               Próximo partido en casa
             </p>
             <p className="font-[family-name:var(--font-gin)] font-bold uppercase text-white text-lg lg:text-xl tracking-wide leading-none">
-              Daneses vs Dragones de Querétaro
+              Daneses vs {game.rival}
             </p>
           </div>
         </div>
@@ -60,7 +84,7 @@ export default function NextGameBar() {
         <div className="flex flex-wrap items-center gap-5 lg:gap-8">
           <div className="text-center">
             <p className="font-[family-name:var(--font-montserrat)] text-[10px] tracking-[0.2em] uppercase text-white/40">Fecha</p>
-            <p className="font-[family-name:var(--font-gin)] font-bold text-white text-base uppercase">24 Oct 2026</p>
+            <p className="font-[family-name:var(--font-gin)] font-bold text-white text-base uppercase">{game.date} {game.startsAt.slice(0, 4)}</p>
           </div>
           <div className="text-center">
             <p className="font-[family-name:var(--font-montserrat)] text-[10px] tracking-[0.2em] uppercase text-white/40">Sede</p>
@@ -68,7 +92,7 @@ export default function NextGameBar() {
           </div>
           <div className="text-center">
             <p className="font-[family-name:var(--font-montserrat)] text-[10px] tracking-[0.2em] uppercase text-white/40">Hora</p>
-            <p className="font-[family-name:var(--font-gin)] font-bold text-white text-base uppercase">18:00 h</p>
+            <p className="font-[family-name:var(--font-gin)] font-bold text-white text-base uppercase">{game.time}</p>
           </div>
 
           {/* Countdown */}
