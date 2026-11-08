@@ -20,10 +20,12 @@ export function useCountdown(target: Date) {
     };
   };
   const [time, setTime] = useState(calc);
+  const targetMs = target.getTime();
   useEffect(() => {
+    setTime(calc());
     const id = setInterval(() => setTime(calc()), 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [targetMs]);
   return time;
 }
 
